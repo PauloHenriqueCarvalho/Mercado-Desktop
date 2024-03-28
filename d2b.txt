@@ -1,0 +1,79 @@
+drop database db_iagon;
+CREATE DATABASE db_iagon;
+USE db_iagon;
+
+create table usuario(
+idUsuario int auto_increment primary key,
+login varchar(100) not null,
+senha varchar(100) not null,
+telefone varchar(30) not null,
+nome varchar(100) not null,
+icon longblob,
+acesso varchar(10) default 'cliente'
+);
+
+ create table categoria(
+ idCategoria int auto_increment primary key,
+ nome varchar(30) not null
+ );
+ 
+ insert into categoria(nome) value ('alimento');
+  insert into categoria(nome) value ('roupas');
+ 
+ create table produto(
+ idProduto int auto_increment primary key,
+ nome varchar(100) not null,
+ categoria int not null,
+ preco decimal(10,2) not null,
+ desconto int,
+ descontoPorcentagem decimal(10,2),
+ precoFinal decimal(10,2) NOT NULL,
+ imagem longblob,
+ foreign key(categoria) references categoria(idCategoria)
+ );
+
+  
+create table pedido(
+idPedido  int auto_increment primary key,
+dataPedido date not null,
+produto int not null,
+cliente int not null,
+valorFinal decimal(10,2) not null,
+quantidade int not null,
+status ENUM('pendente', 'concluido') DEFAULT 'pendente',
+foreign key(produto) references produto(idProduto),
+foreign key(cliente) references usuario(idUsuario)
+);
+
+create table carrinho (
+idCarrinho int auto_increment primary key,
+usuario int not null,
+foreign key (usuario) references usuario(idUsuario)
+);
+
+insert into usuario(login,senha,telefone,nome,acesso) values ('admin','admin','99999999','Administrador','admin');
+INSERT INTO carrinho (usuario) VALUES (1);
+
+create table produto_carrinho (
+idProduto_carrinho int primary key auto_increment,
+carrinho int,
+produto int,
+quantidade int,
+foreign key (carrinho) references carrinho(idCarrinho),
+foreign key (produto) references produto(idProduto)
+);
+
+create table estoque (
+idEstoque int primary key auto_increment,
+produto int,
+quantidade int,
+dataAtualizacaoEstoque datetime default current_timestamp,
+foreign key (produto) references produto(idProduto)
+);
+
+create table empresa(
+id int primary key auto_increment,
+valorEstoque decimal(10,2),
+valorVendido decimal(10,2),
+valorLucro decimal(10,2)
+);
